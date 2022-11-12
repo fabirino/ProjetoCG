@@ -4,6 +4,8 @@
    ==========================================================================
  */
 #include <iostream>
+#include <stdlib.h>
+#include <math.h>
 #include <GL\glut.h>
 
 #define BLUE     0.0, 0.0, 1.0, 1.0
@@ -11,13 +13,18 @@
 #define GREEN    0.0, 1.0, 0.0, 1.0
 #define PI 3.14159
 
-// Observador
-GLfloat  rVisao = 15, aVisao =  PI/4, incVisao = 1;
+ // Observador
+GLfloat  rVisao = 15, aVisao = PI / 4, incVisao = 1;
 GLfloat  obsP[] = { rVisao * cos(aVisao), 5.0, rVisao * sin(aVisao) };
 float     anguloZ = 35;
 
 // Vidros
-GLfloat hVidro = 0;
+int vidro = 0;
+GLfloat hVidro1 = 0;
+GLfloat hVidro2 = 0;
+
+// Limpa Vidros
+GLfloat angVidro = asin(0.75); 
 
 void inicializa() {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -26,11 +33,6 @@ void inicializa() {
 
 	/*glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);*/
-
-	/*glVertexPointer(3, GL_FLOAT, 0, vertices);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glNormalPointer(GL_FLOAT, 0, normais);
-	glEnableClientState(GL_NORMAL_ARRAY);*/
 
 }
 
@@ -98,7 +100,7 @@ void desenhaCubo() {
 	glVertex3f(-1, -1, -1);
 	glVertex3f(-1, -1, 1);
 	glEnd();
-	
+
 
 }
 
@@ -118,23 +120,49 @@ void desenhaVidro() {
 	glVertex3f(2, 3, -2);
 	glEnd();
 
+
 	// Vidro Condutor
+	glPushMatrix();
+	glTranslatef(0, hVidro1, 0);
 	glBegin(GL_TRIANGLES);
-	glVertex3f(2, 1, -2);
-	glVertex3f(4, 1, -2);
-	glVertex3f(2, 3, -2);
+	glVertex3f(2, 1, -1.999);
+	glVertex3f(4, 1, -1.999);
+	glVertex3f(2, 3, -1.999);
 	glEnd();
+	glPopMatrix();
 
 	// Vidro Pendura
+	glPushMatrix();
+	glTranslatef(0, hVidro2, 0);
 	glBegin(GL_TRIANGLES);
-	glVertex3f(2, 3, 2);
-	glVertex3f(2, 1, 2);
-	glVertex3f(4, 1, 2);
+	glVertex3f(2, 3, 1.999);
+	glVertex3f(2, 1, 1.999);
+	glVertex3f(4, 1, 1.999);
 	glEnd();
+	glPopMatrix();
 
 	glPopMatrix();
 	glDisable(GL_BLEND);
 
+}
+
+void desenhaParaBrisas() {
+
+	// condutor
+	glColor3f(0.2, 0.2, 0.2);
+	glPushMatrix();
+	glTranslatef(4, 1, -1);
+	glScalef(0.1, 0.1, 1);
+	desenhaCubo();
+	glPopMatrix();
+
+	// Pendura
+	glColor3f(0.2, 0.2, 0.2);
+	glPushMatrix();
+	glTranslatef(4,1,1);
+	glScalef(0.1, 0.1, 1);
+	desenhaCubo();
+	glPopMatrix();
 }
 
 void desenhaAmbulancia() {
@@ -144,7 +172,7 @@ void desenhaAmbulancia() {
 	// Corpo da Ambulancia
 	glColor3f(0.77, 0.6, 0);
 	glPushMatrix();
-	glScalef(4,1,2);
+	glScalef(4, 1, 2);
 	desenhaCubo();
 	glPopMatrix();
 
@@ -166,8 +194,9 @@ void desenhaAmbulancia() {
 
 	desenhaVidro();
 
-	glPopMatrix();
+	desenhaParaBrisas();
 
+	glPopMatrix();
 
 }
 
@@ -187,6 +216,30 @@ void display(void) {
 	gluLookAt(obsP[0], obsP[1], obsP[2], 0, 0, 0, 0, 1, 0);
 
 	drawEixos();
+
+	if (vidro) {
+		if (hVidro1 > -2) {
+			printf("hVidro1 -> %f\n", hVidro1);
+			hVidro1 -= 0.05;
+		}
+		if (hVidro2 > -2) {
+			hVidro2 -= 0.05;
+		}
+	}
+	else {
+		if (hVidro1 < 0) {
+			hVidro1 += 0.05;
+		}
+		if (hVidro1 == 0) {
+			hVidro1 += 0.099;
+		}
+		if (hVidro2 < 0) {
+			hVidro2 += 0.05;
+		}
+		if (hVidro2 == 0) {
+			hVidro2 += 0.099;
+		}
+	}
 
 	desenhaAmbulancia();
 
@@ -222,13 +275,14 @@ void Teclado(unsigned char key, int x, int y) {
 
 	switch (key) {
 		// Limpa-Vidros
-	case 'l':
+	case 'L': case 'l':
 
+		glutPostRedisplay();
 		break;
-		// Sirene
-	case 's':
-
-
+		// Vidros
+	case 'V': case 'v':
+		vidro = !vidro;
+		glutPostRedisplay();
 		break;
 	}
 
@@ -241,7 +295,7 @@ void Timer(int value)
 }
 
 int main(int argc, char** argv) {
-	glutInit(&argc, argv);	
+	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(600, 500);
 	glutInitWindowPosition(200, 100);
