@@ -20,11 +20,13 @@ float     anguloZ = 35;
 
 // Vidros
 int vidro = 0;
-GLfloat hVidro1 = 0;
-GLfloat hVidro2 = 0;
+GLfloat hVidro1 = -0.05f;
+GLfloat hVidro2 = -0.05f;
 
 // Limpa Vidros
-GLfloat angVidro = asin(0.75); 
+GLfloat angPB = 0.0f;
+int PB = 0;
+int ida; // para saber se o parabrisas esta na ida ou na volta
 
 void inicializa() {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -151,7 +153,10 @@ void desenhaParaBrisas() {
 	// condutor
 	glColor3f(0.2, 0.2, 0.2);
 	glPushMatrix();
-	glTranslatef(4, 1, -1);
+	glTranslatef(4, 1.2, -2);
+	glRotatef(45, 0, 0, 1);
+	glRotatef(-angPB, 1, 0, 0);
+	glTranslatef(0, 0.05, 1);
 	glScalef(0.1, 0.1, 1);
 	desenhaCubo();
 	glPopMatrix();
@@ -159,7 +164,10 @@ void desenhaParaBrisas() {
 	// Pendura
 	glColor3f(0.2, 0.2, 0.2);
 	glPushMatrix();
-	glTranslatef(4,1,1);
+	glTranslatef(4, 1.2, 0);
+	glRotatef(45, 0, 0, 1);
+	glRotatef(-angPB, 1, 0, 0);
+	glTranslatef(0, 0.05, 1);
 	glScalef(0.1, 0.1, 1);
 	desenhaCubo();
 	glPopMatrix();
@@ -214,12 +222,12 @@ void display(void) {
 	glLoadIdentity();
 
 	gluLookAt(obsP[0], obsP[1], obsP[2], 0, 0, 0, 0, 1, 0);
+	//gluLookAt(4, 1, -4, 0, 0, 0, 0, 1, 0);
 
 	drawEixos();
 
 	if (vidro) {
 		if (hVidro1 > -2) {
-			printf("hVidro1 -> %f\n", hVidro1);
 			hVidro1 -= 0.05;
 		}
 		if (hVidro2 > -2) {
@@ -239,6 +247,13 @@ void display(void) {
 		if (hVidro2 == 0) {
 			hVidro2 += 0.099;
 		}
+	}
+
+	if (PB) { // 0 < x < -90
+		if (angPB == 0) ida = 0;
+		if (angPB == 90)  ida = 1;
+		if (ida) angPB-=5;
+		else     angPB+=5;
 	}
 
 	desenhaAmbulancia();
@@ -276,12 +291,14 @@ void Teclado(unsigned char key, int x, int y) {
 	switch (key) {
 		// Limpa-Vidros
 	case 'L': case 'l':
-
+		if (!PB) PB = 1;
+		else PB = 0;
 		glutPostRedisplay();
 		break;
 		// Vidros
 	case 'V': case 'v':
-		vidro = !vidro;
+		if (!vidro) vidro = 1;
+		else vidro = 0;
 		glutPostRedisplay();
 		break;
 	}
