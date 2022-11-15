@@ -291,7 +291,7 @@ void Teclado(unsigned char key, int x, int y) {
 void Timer(int value)
 {
 	glutPostRedisplay();
-	glutTimerFunc(0.5, Timer, 1);
+	glutTimerFunc(50, Timer, 1);
 }
 
 int main(int argc, char** argv) {
@@ -299,14 +299,14 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(600, 500);
 	glutInitWindowPosition(200, 100);
-	glutCreateWindow("Setas Andar | 'L' Limpar o vidro | S - Ligar Sirene");
+	glutCreateWindow("Setas Andar | 'L' Limpar o vidro | V - Baixa os vidros");
 
 	inicializa();
 
-	glutDisplayFunc(display);
 	glutSpecialFunc(teclasNotAscii);
+	glutDisplayFunc(display);
 	glutKeyboardFunc(Teclado);
-	glutTimerFunc(0.5, Timer, 1);
+	glutTimerFunc(50, Timer, 1);
 
 
 	glutMainLoop();
