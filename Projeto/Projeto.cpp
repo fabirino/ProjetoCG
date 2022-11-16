@@ -163,22 +163,22 @@ void desenhaParaBrisas() {
 	// condutor
 	glColor3f(0.2, 0.2, 0.2);
 	glPushMatrix();
-	glTranslatef(4, 1.2, -2);
+	glTranslatef(4, 1.1, -2);
 	glRotatef(45, 0, 0, 1);
 	glRotatef(-angPB, 1, 0, 0);
 	glTranslatef(0, 0.05, 1);
-	glScalef(0.1, 0.1, 1);
+	glScalef(0.05, 0.05, 1);
 	desenhaCubo();
 	glPopMatrix();
 
 	// Pendura
 	glColor3f(0.2, 0.2, 0.2);
 	glPushMatrix();
-	glTranslatef(4, 1.2, 0);
+	glTranslatef(4, 1.1, 0);
 	glRotatef(45, 0, 0, 1);
 	glRotatef(-angPB, 1, 0, 0);
 	glTranslatef(0, 0.05, 1);
-	glScalef(0.1, 0.1, 1);
+	glScalef(0.05, 0.05, 1);
 	desenhaCubo();
 	glPopMatrix();
 }
