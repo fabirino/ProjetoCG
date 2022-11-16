@@ -18,6 +18,16 @@ GLfloat  rVisao = 15, aVisao = PI / 4, incVisao = 1;
 GLfloat  obsP[] = { rVisao * cos(aVisao), 5.0, rVisao * sin(aVisao) };
 float     anguloZ = 35;
 
+// Observador 3rd Person
+GLfloat  obs3Person[] = { -12, 5.0, 0 };
+GLfloat  paraOnde[] = { 4, 4, 0};
+int thirdPerson = 0;
+
+// Movimento carro
+GLfloat theta = 0.;
+GLfloat vel = 1.;
+GLfloat pos[] = { 0., 0., 0. };
+
 // Vidros
 int vidro = 0;
 GLfloat hVidro1 = -0.05f;
@@ -200,6 +210,30 @@ void desenhaAmbulancia() {
 	desenhaCubo();
 	glPopMatrix();
 
+	// Rodas 
+	glColor3f(0.2, 0.2, 0.2);
+	glPushMatrix();
+	glTranslatef(2,-1,2);
+	glutSolidTorus(0.6, 0.6, 15, 15);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(2, -1, -2);
+	glutSolidTorus(0.6, 0.6, 15, 15);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-2, -1, 2);
+	glutSolidTorus(0.6, 0.6, 15, 15);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-2, -1, -2);
+	glutSolidTorus(0.6, 0.6, 15, 15);
+	glPopMatrix();
+
+
+
 	desenhaVidro();
 
 	desenhaParaBrisas();
@@ -212,19 +246,6 @@ void desenhaAmbulancia() {
 void display(void) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glViewport(0, 0, 600, 500);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(85, (float)600 / 500, 0.1, 9999);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	gluLookAt(obsP[0], obsP[1], obsP[2], 0, 0, 0, 0, 1, 0);
-	//gluLookAt(4, 1, -4, 0, 0, 0, 0, 1, 0);
-
-	drawEixos();
 
 	if (vidro) {
 		if (hVidro1 > -2) {
@@ -252,20 +273,78 @@ void display(void) {
 	if (PB) { // 0 < x < -90
 		if (angPB == 0) ida = 0;
 		if (angPB == 90)  ida = 1;
-		if (ida) angPB-=5;
-		else     angPB+=5;
+		if (ida) angPB -= 5;
+		else     angPB += 5;
 	}
 
+	// Observador 
+	if (!thirdPerson) {
+		glViewport(0, 0, 600, 500);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(85, (float)600 / 500, 0.1, 9999);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		gluLookAt(obsP[0], obsP[1], obsP[2], 0, 0, 0, 0, 1, 0);
+
+		drawEixos();
+
+
+		glPushMatrix();
+		glTranslatef(pos[0], pos[1], pos[2]);
+		glRotatef(theta, 0, 1, 0);
+		desenhaAmbulancia();
+		glPopMatrix();
+	
+	}
+	// 3 Pessoa
+	else {
+		glViewport(0, 0, 600, 500);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(85, (float)600 / 500, 0.1, 9999);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		gluLookAt(obs3Person[0], obs3Person[1], obs3Person[2], paraOnde[0], paraOnde[1], paraOnde[2], 0, 1, 0);
+		drawEixos();
+
+
+		glPushMatrix();
+		glTranslatef(pos[0], pos[1], pos[2]);
+		glRotatef(theta, 0, 1, 0);
+		desenhaAmbulancia();
+		glPopMatrix();
+
+	}
+
+	// Minimapa
+	glViewport(0, 0, 600/4, 500/4);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-10, 10, -10, 10, -10, 10);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	gluLookAt(pos[0], pos[1] + 5, pos[2], pos[0], 0, pos[2], 0, 0, -1);
+	drawEixos();
+
+
+	glPushMatrix();
+	glTranslatef(pos[0], pos[1], pos[2]);
+	glRotatef(theta, 0, 1, 0);
 	desenhaAmbulancia();
+	glPopMatrix();
 
 	glutSwapBuffers();
 }
 
 void teclasNotAscii(int key, int x, int y) {
-
-	//=========================================================
-	//  <><><><><><>  Movimento do observador  ???
-	//=========================================================
+	// Observador
 	if (key == GLUT_KEY_UP) {
 		obsP[1] += 0.2;
 	}    // Movimento para cima
@@ -289,19 +368,63 @@ void teclasNotAscii(int key, int x, int y) {
 void Teclado(unsigned char key, int x, int y) {
 
 	switch (key) {
+		// Movimento carro
+	case 'W': case 'w':
+		pos[0] = pos[0] + vel * cos(theta * PI / 180.);
+		pos[2] = pos[2] - vel * sin(theta * PI / 180.);
+
+		obs3Person[0] = obs3Person[0] + vel * cos(theta * PI / 180.);
+		obs3Person[2] = obs3Person[2] - vel * sin(theta * PI / 180.);
+
+		paraOnde[0] = obs3Person[0] + vel * cos(theta * PI / 180.);
+		paraOnde[2] = obs3Person[2] - vel * cos(theta * PI / 180.);
+
+		glutPostRedisplay();
+		break;
+	case 'S': case 's':
+		pos[0] = pos[0] - vel * cos(theta * PI / 180.);
+		pos[2] = pos[2] + vel * sin(theta * PI / 180.);
+
+		obs3Person[0] = obs3Person[0] - vel * cos(theta * PI / 180.);
+		obs3Person[2] = obs3Person[2] + vel * sin(theta * PI / 180.);
+
+		paraOnde[0] = obs3Person[0] + vel * cos(theta * PI / 180.);
+		paraOnde[2] = obs3Person[2] - vel * cos(theta * PI / 180.);
+
+		glutPostRedisplay();
+		break;
+	case 'A': case 'a':
+		theta += 3.;
+		glutPostRedisplay();
+		break;
+	case 'D': case 'd':
+		theta -= 3.;
+		glutPostRedisplay();
+		break;
+
 		// Limpa-Vidros
 	case 'L': case 'l':
 		if (!PB) PB = 1;
 		else PB = 0;
 		glutPostRedisplay();
 		break;
+
 		// Vidros
 	case 'V': case 'v':
 		if (!vidro) vidro = 1;
 		else vidro = 0;
 		glutPostRedisplay();
 		break;
+
+		// Troca Observador
+	case 'P': case 'p':
+		if (!thirdPerson) thirdPerson = 1;
+		else thirdPerson = 0;
+		glutPostRedisplay();
+		break;
+
 	}
+
 
 }
 
