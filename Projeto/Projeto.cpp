@@ -3,6 +3,8 @@
 
    ==========================================================================
  */
+#include "RgbImage.h"
+
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
@@ -38,14 +40,35 @@ GLfloat angPB = 0.0f;
 int PB = 0;
 int ida; // para saber se o parabrisas esta na ida ou na volta
 
+// Textura
+GLuint texture;
+RgbImage imag;
+
 void inicializa() {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
 
-	/*glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);*/
+	// Textura
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	imag.LoadBmpFile("Louis-Vuitton-Pattern.bmp");
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+		imag.GetNumCols(),
+		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+		imag.ImageData());
 
+	glEnable(GL_DEPTH_TEST);
+	/*glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);*/
+
+	
 }
 
 void drawEixos()
@@ -70,28 +93,29 @@ void drawEixos()
 
 void desenhaCubo() {
 
-	//Face da frente
+
+	//Face Lateral
 	glBegin(GL_POLYGON);
 	glVertex3f(1, 1, 1);
 	glVertex3f(-1, 1, 1);
 	glVertex3f(-1, -1, 1);
 	glVertex3f(1, -1, 1);
 	glEnd();
-	//Face da trás
+	//Face Lateral
 	glBegin(GL_POLYGON);
 	glVertex3f(1, 1, -1);
 	glVertex3f(-1, 1, -1);
 	glVertex3f(-1, -1, -1);
 	glVertex3f(1, -1, -1);
 	glEnd();
-	//Face da Esquerda
+	//Face de tras
 	glBegin(GL_POLYGON);
 	glVertex3f(-1, 1, 1);
 	glVertex3f(-1, 1, -1);
 	glVertex3f(-1, -1, -1);
 	glVertex3f(-1, -1, 1);
 	glEnd();
-	//Face da Direita
+	//Face da Frente
 	glBegin(GL_POLYGON);
 	glVertex3f(1, 1, 1);
 	glVertex3f(1, 1, -1);
@@ -112,8 +136,82 @@ void desenhaCubo() {
 	glVertex3f(-1, -1, -1);
 	glVertex3f(-1, -1, 1);
 	glEnd();
+}
 
+void desenhaCuboTextura() {
 
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	//Face Lateral
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0f, 0.5f);
+	glVertex3f(1, 1, 1);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(1, -1, 1);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-1, -1, 1);
+	glTexCoord2f(0.0f, 0.5f);
+	glVertex3f(-1, 1, 1);
+	glEnd();
+
+	//Face Lateral
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0.0f, 0.5f);
+	glVertex3f(-1, 1, -1);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-1, -1, -1);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(1, -1, -1);
+	glTexCoord2f(1.0f, 0.5f);
+	glVertex3f(1, 1, -1);
+	glEnd();
+
+	//Face de Tras
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0.0f, 0.5f);
+	glVertex3f(-1, 1, 1);
+	glTexCoord2f(0.5f, 0.5f);
+	glVertex3f(-1, 1, -1);
+	glTexCoord2f(0.5f, 0.0f);
+	glVertex3f(-1, -1, -1);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-1, -1, 1);
+	glEnd();
+
+	//Face da Frente
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0.0f, 0.5f);
+	glVertex3f(1, 1, 1);
+	glTexCoord2f(0.5f, 0.5f);
+	glVertex3f(1, 1, -1);
+	glTexCoord2f(0.5f, 0.0f);
+	glVertex3f(1, -1, -1);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(1, -1, 1);
+	glEnd();
+
+	//Face de Cima
+	glBegin(GL_POLYGON);
+	glVertex3f(1, 1, 1);
+	glVertex3f(1, 1, -1);
+	glVertex3f(-1, 1, -1);
+	glVertex3f(-1, 1, 1);
+	glEnd();
+
+	//Face de baixo
+	glBegin(GL_POLYGON);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(1, -1, 1);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(1, -1, -1);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-1, -1, -1);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-1, -1, 1);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 void desenhaVidro() {
@@ -191,7 +289,7 @@ void desenhaAmbulancia() {
 	glColor3f(0.77, 0.6, 0);
 	glPushMatrix();
 	glScalef(4, 1, 2);
-	desenhaCubo();
+	desenhaCuboTextura();
 	glPopMatrix();
 
 	// Parte traseira ao vidro (azul)
