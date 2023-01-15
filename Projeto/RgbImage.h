@@ -21,6 +21,8 @@
 #ifndef RGBIMAGE_H
 #define RGBIMAGE_H
 
+#define GLUT_BUILDING_LIB 
+
 #include <stdio.h>
 #include <assert.h>
 
