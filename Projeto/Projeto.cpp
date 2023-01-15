@@ -68,7 +68,7 @@ void inicializa() {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	imag.LoadBmpFile("Louis-Vuitton-Pattern.bmp");
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -349,6 +349,11 @@ void desenhaParaBrisas() {
 
 void desenhaAmbulancia() {
 
+	GLfloat  TextAmb[] = { 0.75 ,0.75 ,0.75 };
+	GLfloat  TextDif[] = { 0.75 ,0.75 ,0.75 };
+	GLfloat  TextSpec[] = { 0.75 ,0.75 ,0.75 };
+	GLint  TextCoef = 0.4 * 128;
+
 	GLfloat  goldAmb[] = { 0.24725 ,0.1995 ,0.0745 };
 	GLfloat  goldDif[] = { 0.75164 ,0.60648 ,0.22648 };
 	GLfloat  goldSpec[] = { 0.628281 ,0.555802 ,0.366065 };
@@ -361,7 +366,6 @@ void desenhaAmbulancia() {
 	GLfloat  obsidianDif[] = { 0.18275 ,0.17 ,0.22525 };
 	GLfloat  obsidianSpec[] = { 0.332741 ,0.328634 ,0.346435 };
 	GLint  obsidianCoef = 0.3 * 128;
-
 	GLfloat  bluePlasticAmb[] = { 0.0 ,0.1 ,0.06 };
 	GLfloat  bluePlasticDif[] = { 0.0 ,0.20980392 ,0.85980392 };
 	GLfloat  bluePlasticSpec[] = { 0.0 ,0.20196078 ,0.85196078 };
@@ -372,10 +376,10 @@ void desenhaAmbulancia() {
 	// Corpo da Ambulancia ================================
 	//glColor3f(0.77, 0.6, 0);
 
-	glMaterialfv(GL_FRONT, GL_AMBIENT, goldAmb);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, goldDif);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, goldSpec);
-	glMaterialf(GL_FRONT, GL_SHININESS, goldCoef);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, TextAmb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, TextDif);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, TextSpec);
+	glMaterialf(GL_FRONT, GL_SHININESS, TextCoef);
 
 	glPushMatrix();
 	glScalef(4, 1, 2);
