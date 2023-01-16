@@ -44,6 +44,7 @@ GLuint texture;
 RgbImage imag;
 
 // Luz Pontual ==========================================================================
+int luz = 1;
 GLfloat intensidadeLuz = 1.0;
 GLfloat PosLuz[4] = { 5.0, 5.0, 5.0, 1.0 };
 GLfloat localCorAmb[4] = { 0, 0, 0, 0.0 };
@@ -53,15 +54,15 @@ GLfloat localCorEsp[4] = { 1.0, 1.0, 1.0, 1.0 };
 // Luz Focos
 int sirene = 0;
 
-GLfloat foco1_pos[] = { 0.0, 4.5, 1 , 1.0};
+GLfloat foco1_pos[] = { 0.0, 5.5, 1 , 1.0 };
 GLfloat foco1_direcao[] = { 0.0, -1.0, 1.0, 0.0 };
 GLfloat foco1_cor[] = { 1.0, 0.0, 0.0, 1.0 };
 
-GLfloat foco2_pos[] = { 0.0, 4.5, -1, 1.0 };
+GLfloat foco2_pos[] = { 0.0, 5.5, -1, 1.0 };
 GLfloat foco2_direcao[] = { 0.0, -1.0, -1.0, 0.0 };
 GLfloat foco2_cor[] = { 0.0, 0.0, 1.0, 1.0 };
 
-GLfloat aberturaFoco = 100.0;
+GLfloat aberturaFoco = 80.0;
 
 GLfloat foco_ak = 1.0f;
 GLfloat foco_al = 0.25f;
@@ -82,7 +83,7 @@ void inicializa() {
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	//glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHT1);
 	glEnable(GL_LIGHT2);
 
 	// Textura =========================================================
@@ -116,7 +117,7 @@ void drawEixos() {
 	GLfloat blackPlasticDif[] = { 0.00 ,0.00 ,0.00 };
 	GLfloat blackPlasticSpec[] = { 0.0 ,0.00 ,0.0 };
 	GLint blackPlasticCoef = 0.25 * 128;
-	
+
 
 	//glColor4f(ORANGE);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, blackPlasticAmb);
@@ -257,7 +258,7 @@ void desenhaCubo() {
 	glVertex3f(1, 1, -1);
 	glVertex3f(-1, 1, -1);
 	glVertex3f(-1, 1, 1);
-	glVertex3f(-0.5, 1, 0.5);
+	//glVertex3f(-0.5, 1, 0.5);
 	glEnd();
 	//Face de baixo
 	glNormal3f(0, -1, 0);
@@ -352,10 +353,15 @@ void desenhaCuboTextura() {
 }
 
 void desenhaVidro() {
-	glDisable(GL_LIGHTING);
+	//glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(0.6, 0.8, 0.9, 0.5);
+	//glColor4f(0.6, 0.8, 0.9, 0.5);
+
+	GLfloat corVidro[] = { 0.6, 0.8, 0.9, 0.3 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT, corVidro);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, corVidro);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, corVidro);
 
 	glPushMatrix();
 
@@ -391,7 +397,7 @@ void desenhaVidro() {
 	glPopMatrix();
 	glDisable(GL_BLEND);
 
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 
 }
 
@@ -430,11 +436,6 @@ void desenhaParaBrisas() {
 
 void desenhaAmbulancia() {
 
-	GLfloat  TextAmb[] = { 0.75 ,0.75 ,0.75 };
-	GLfloat  TextDif[] = { 0.75 ,0.75 ,0.75 };
-	GLfloat  TextSpec[] = { 0.75 ,0.75 ,0.75 };
-	GLint  TextCoef = 0.4 * 128;
-
 	GLfloat  goldAmb[] = { 0.24725 ,0.1995 ,0.0745 };
 	GLfloat  goldDif[] = { 0.75164 ,0.60648 ,0.22648 };
 	GLfloat  goldSpec[] = { 0.628281 ,0.555802 ,0.366065 };
@@ -455,12 +456,12 @@ void desenhaAmbulancia() {
 	glPushMatrix();
 
 	// Corpo da Ambulancia ================================
-	
+
 	//glColor3f(0.77, 0.6, 0);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, TextAmb);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, TextDif);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, TextSpec);
-	glMaterialf(GL_FRONT, GL_SHININESS, TextCoef);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, goldAmb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, goldDif);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, goldSpec);
+	glMaterialf(GL_FRONT, GL_SHININESS, goldCoef);
 
 	glPushMatrix();
 	glScalef(4, 1, 2);
@@ -608,59 +609,43 @@ void display(void) {
 		else     angPB += 5;
 	}
 
+	// (Des)Ligar luz
+	if (luz) {
+		glEnable(GL_LIGHT0);
+	}
+	else {
+		glDisable(GL_LIGHT0);
+	}
+
+	// (Des)Ligar Sirene
 	if (sirene) {
-		//glEnable(GL_LIGHT1);
+		glEnable(GL_LIGHT1);
 		glEnable(GL_LIGHT2);
 	}
 	else {
-		//glDisable(GL_LIGHT1);
+		glDisable(GL_LIGHT1);
 		glDisable(GL_LIGHT2);
 	}
 
 	// Observador 
-	if (!thirdPerson) {
-		glViewport(0, 0, 600, 500);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluPerspective(85, (float)600 / 500, 0.1, 9999);
+	glViewport(0, 0, 600, 500);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(85, (float)600 / 500, 0.1, 9999);
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
-		gluLookAt(obsP[0], obsP[1], obsP[2], 0, 0, 0, 0, 1, 0);
+	gluLookAt(obsP[0], obsP[1], obsP[2], 0, 0, 0, 0, 1, 0);
 
-		iluminacao();
-		drawEixos();
-		glPushMatrix();
-		glTranslatef(pos[0], pos[1], pos[2]);
-		glRotatef(theta, 0, 1, 0);
-		desenhaAmbulancia();
-		desenhaCenario();
-		glPopMatrix();
-
-	}
-	// 3 Pessoa
-	else {
-		glViewport(0, 0, 600, 500);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluPerspective(85, (float)600 / 500, 0.1, 9999);
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		gluLookAt(obs3Person[0], obs3Person[1], obs3Person[2], paraOnde[0], paraOnde[1], paraOnde[2], 0, 1, 0);
-
-		iluminacao();
-		drawEixos();
-		glPushMatrix();
-		glTranslatef(pos[0], pos[1], pos[2]);
-		glRotatef(theta, 0, 1, 0);
-		desenhaAmbulancia();
-		desenhaCenario();
-		glPopMatrix();
-
-	}
+	iluminacao();
+	drawEixos();
+	glPushMatrix();
+	glTranslatef(pos[0], pos[1], pos[2]);
+	glRotatef(theta, 0, 1, 0);
+	desenhaAmbulancia();
+	glPopMatrix();
+	desenhaCenario();
 
 	// Minimapa
 	glViewport(0, 0, 600 / 4, 500 / 4);
@@ -679,8 +664,8 @@ void display(void) {
 	glTranslatef(pos[0], pos[1], pos[2]);
 	glRotatef(theta, 0, 1, 0);
 	desenhaAmbulancia();
-	desenhaCenario();
 	glPopMatrix();
+	desenhaCenario();
 
 	glutSwapBuffers();
 }
@@ -721,12 +706,6 @@ void Teclado(unsigned char key, int x, int y) {
 		foco2_pos[0] = foco2_pos[0] + vel * cos(theta * PI / 180.);
 		foco2_pos[2] = foco2_pos[2] - vel * sin(theta * PI / 180.);
 
-		obs3Person[0] = obs3Person[0] + vel * cos(theta * PI / 180.);
-		obs3Person[2] = obs3Person[2] - vel * sin(theta * PI / 180.);
-
-		paraOnde[0] = obs3Person[0] + vel * cos(theta * PI / 180.);
-		paraOnde[2] = obs3Person[2] - vel * cos(theta * PI / 180.);
-
 		glutPostRedisplay();
 		break;
 	case 'S': case 's':
@@ -738,12 +717,6 @@ void Teclado(unsigned char key, int x, int y) {
 
 		foco2_pos[0] = foco2_pos[0] - vel * cos(theta * PI / 180.);
 		foco2_pos[2] = foco2_pos[2] + vel * sin(theta * PI / 180.);
-
-		obs3Person[0] = obs3Person[0] - vel * cos(theta * PI / 180.);
-		obs3Person[2] = obs3Person[2] + vel * sin(theta * PI / 180.);
-
-		paraOnde[0] = obs3Person[0] + vel * cos(theta * PI / 180.);
-		paraOnde[2] = obs3Person[2] - vel * cos(theta * PI / 180.);
 
 		glutPostRedisplay();
 		break;
@@ -772,8 +745,8 @@ void Teclado(unsigned char key, int x, int y) {
 
 		// Troca Observador
 	case 'P': case 'p':
-		if (!thirdPerson) thirdPerson = 1;
-		else thirdPerson = 0;
+		if (!luz) luz = 1;
+		else luz = 0;
 		glutPostRedisplay();
 		break;
 
