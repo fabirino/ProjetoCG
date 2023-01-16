@@ -44,11 +44,30 @@ GLuint texture;
 RgbImage imag;
 
 // Luz Pontual ==========================================================================
-GLfloat intensidadeLuz = 0.7;
+GLfloat intensidadeLuz = 1.0;
 GLfloat PosLuz[4] = { 5.0, 5.0, 5.0, 1.0 };
 GLfloat localCorAmb[4] = { 0, 0, 0, 0.0 };
 GLfloat localCorDif[4] = { 1.0, 1.0, 1.0, 1.0 };
 GLfloat localCorEsp[4] = { 1.0, 1.0, 1.0, 1.0 };
+
+// Luz Focos
+int sirene = 0;
+
+GLfloat foco1_pos[] = { 0.0, 4.5, 1 , 1.0};
+GLfloat foco1_direcao[] = { 0.0, -1.0, 1.0, 0.0 };
+GLfloat foco1_cor[] = { 1.0, 0.0, 0.0, 1.0 };
+
+GLfloat foco2_pos[] = { 0.0, 4.5, -1, 1.0 };
+GLfloat foco2_direcao[] = { 0.0, -1.0, -1.0, 0.0 };
+GLfloat foco2_cor[] = { 0.0, 0.0, 1.0, 1.0 };
+
+GLfloat aberturaFoco = 100.0;
+
+GLfloat foco_ak = 1.0f;
+GLfloat foco_al = 0.25f;
+GLfloat foco_aq = 1.0f;
+GLfloat foco_Expon = 1.0;
+
 
 // Cor Materiais ========================================================================
 
@@ -63,6 +82,8 @@ void inicializa() {
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	//glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHT2);
 
 	// Textura =========================================================
 	glGenTextures(1, &texture);
@@ -81,10 +102,6 @@ void inicializa() {
 		imag.ImageData());
 
 	// Luz ==============================================================
-	glLightfv(GL_LIGHT0, GL_POSITION, PosLuz);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, localCorAmb);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, localCorDif);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, localCorEsp);
 
 	// Materiais + Cor
 
@@ -94,17 +111,18 @@ void inicializa() {
 
 }
 
-void drawEixos(){
-	GLfloat whitePlasticAmb[] = { 0.8 ,0.8 ,0.8 };
-	GLfloat whitePlasticDif[] = { 0.55 ,0.55 ,0.55 };
-	GLfloat whitePlasticSpec[] = { 0.870 ,0.870 ,0.870 };
-	GLint whitePlasticCoef = 0.25 * 128;
+void drawEixos() {
+	GLfloat blackPlasticAmb[] = { 0.0 ,0.0 ,0.0 };
+	GLfloat blackPlasticDif[] = { 0.00 ,0.00 ,0.00 };
+	GLfloat blackPlasticSpec[] = { 0.0 ,0.00 ,0.0 };
+	GLint blackPlasticCoef = 0.25 * 128;
+	
 
 	//glColor4f(ORANGE);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, whitePlasticAmb);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, whitePlasticDif);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, whitePlasticSpec);
-	glMaterialf(GL_FRONT, GL_SHININESS, whitePlasticCoef);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, blackPlasticAmb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, blackPlasticDif);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, blackPlasticSpec);
+	glMaterialf(GL_FRONT, GL_SHININESS, blackPlasticCoef);
 
 	glBegin(GL_LINES);
 	glVertex3f(0, 0, 0);
@@ -113,10 +131,10 @@ void drawEixos(){
 
 
 	//glColor4f(GREEN);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, whitePlasticAmb);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, whitePlasticDif);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, whitePlasticSpec);
-	glMaterialf(GL_FRONT, GL_SHININESS, whitePlasticCoef);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, blackPlasticAmb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, blackPlasticDif);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, blackPlasticSpec);
+	glMaterialf(GL_FRONT, GL_SHININESS, blackPlasticCoef);
 
 	glBegin(GL_LINES);
 	glVertex3f(0, 0, 0);
@@ -125,15 +143,77 @@ void drawEixos(){
 
 
 	//glColor4f(BLUE);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, whitePlasticAmb);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, whitePlasticDif);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, whitePlasticSpec);
-	glMaterialf(GL_FRONT, GL_SHININESS, whitePlasticCoef);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, blackPlasticAmb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, blackPlasticDif);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, blackPlasticSpec);
+	glMaterialf(GL_FRONT, GL_SHININESS, blackPlasticCoef);
 
 	glBegin(GL_LINES);
 	glVertex3f(0, 0, 0);
 	glVertex3f(0, 0, 0.5 * 20);
 	glEnd();
+}
+
+void desenhaCenario() {
+	GLfloat whitePlasticAmb[] = { 0.8 ,0.8 ,0.8 };
+	GLfloat whitePlasticDif[] = { 0.55 ,0.55 ,0.55 };
+	GLfloat whitePlasticSpec[] = { 0.870 ,0.870 ,0.870 };
+	GLint whitePlasticCoef = 0.25 * 128;
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT, whitePlasticAmb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, whitePlasticDif);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, whitePlasticSpec);
+	glMaterialf(GL_FRONT, GL_SHININESS, whitePlasticCoef);
+
+	// Baixo
+	glBegin(GL_QUADS);
+	glVertex3f(-15, -15, 15);
+	glVertex3f(15, -15, 15);
+	glVertex3f(15, -15, -15);
+	glVertex3f(-15, -15, -15);
+	glEnd();
+
+	// Cima
+	/*glBegin(GL_QUADS);
+	glVertex3f(-15, 15, 15);
+	glVertex3f(-15, 15, -15);
+	glVertex3f(15, 15, -15);
+	glVertex3f(15, 15, 15);
+	glEnd();*/
+
+	// Lateral 
+	glBegin(GL_QUADS);
+	glVertex3f(15, 15, -15);
+	glVertex3f(15, -15, -15);
+	glVertex3f(-15, -15, -15);
+	glVertex3f(-15, 15, -15);
+	glEnd();
+
+	// Lateral 
+	glBegin(GL_QUADS);
+	glVertex3f(15, 15, 15);
+	glVertex3f(15, -15, 15);
+	glVertex3f(-15, -15, 15);
+	glVertex3f(-15, 15, 15);
+	glEnd();
+
+	// Tras
+	glBegin(GL_QUADS);
+	glVertex3f(-15, 15, 15);
+	glVertex3f(-15, -15, 15);
+	glVertex3f(-15, -15, -15);
+	glVertex3f(-15, 15, -15);
+	glEnd();
+
+	// Frente
+	glBegin(GL_QUADS);
+	glVertex3f(15, 15, 15);
+	glVertex3f(15, 15, -15);
+	glVertex3f(15, -15, -15);
+	glVertex3f(15, -15, 15);
+	glEnd();
+
+
 }
 
 void desenhaCubo() {
@@ -177,6 +257,7 @@ void desenhaCubo() {
 	glVertex3f(1, 1, -1);
 	glVertex3f(-1, 1, -1);
 	glVertex3f(-1, 1, 1);
+	glVertex3f(-0.5, 1, 0.5);
 	glEnd();
 	//Face de baixo
 	glNormal3f(0, -1, 0);
@@ -374,8 +455,8 @@ void desenhaAmbulancia() {
 	glPushMatrix();
 
 	// Corpo da Ambulancia ================================
+	
 	//glColor3f(0.77, 0.6, 0);
-
 	glMaterialfv(GL_FRONT, GL_AMBIENT, TextAmb);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, TextDif);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, TextSpec);
@@ -441,6 +522,13 @@ void desenhaAmbulancia() {
 	glutSolidTorus(0.6, 0.6, 15, 15);
 	glPopMatrix();
 
+	// Sirene
+	glPushMatrix();
+	glTranslatef(-1.0, 3.502, 0);
+	glScalef(0.5, 0.5, 0.5);
+	desenhaCubo();
+
+	glPopMatrix();
 
 
 	desenhaVidro();
@@ -452,10 +540,38 @@ void desenhaAmbulancia() {
 }
 
 void iluminacao() {
+
+	// Luz pontual
 	glLightfv(GL_LIGHT0, GL_POSITION, PosLuz);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, localCorAmb);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, localCorDif);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, localCorEsp);
+
+	// Foco 1 RED
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, foco1_cor);
+	//glLightfv(GL_LIGHT1, GL_SPECULAR, foco1_cor);
+	//glLightfv(GL_LIGHT1, GL_AMBIENT, foco1_cor);
+	//glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, foco_ak);
+	//glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, foco_al);
+	//glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, foco_aq);
+
+	glLightfv(GL_LIGHT1, GL_POSITION, foco1_pos);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, foco1_direcao);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, aberturaFoco);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, foco_Expon);
+
+	// Foco 2 BLUE
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, foco2_cor);
+	//glLightfv(GL_LIGHT1, GL_SPECULAR, foco2_cor);
+	//glLightfv(GL_LIGHT1, GL_AMBIENT, foco2_cor);
+	//glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, foco_ak);
+	//glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, foco_al);
+	//glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, foco_aq);
+
+	glLightfv(GL_LIGHT2, GL_POSITION, foco2_pos);
+	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, foco2_direcao);
+	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, aberturaFoco);
+	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, foco_Expon);
 }
 
 void display(void) {
@@ -492,6 +608,15 @@ void display(void) {
 		else     angPB += 5;
 	}
 
+	if (sirene) {
+		//glEnable(GL_LIGHT1);
+		glEnable(GL_LIGHT2);
+	}
+	else {
+		//glDisable(GL_LIGHT1);
+		glDisable(GL_LIGHT2);
+	}
+
 	// Observador 
 	if (!thirdPerson) {
 		glViewport(0, 0, 600, 500);
@@ -510,6 +635,7 @@ void display(void) {
 		glTranslatef(pos[0], pos[1], pos[2]);
 		glRotatef(theta, 0, 1, 0);
 		desenhaAmbulancia();
+		desenhaCenario();
 		glPopMatrix();
 
 	}
@@ -531,6 +657,7 @@ void display(void) {
 		glTranslatef(pos[0], pos[1], pos[2]);
 		glRotatef(theta, 0, 1, 0);
 		desenhaAmbulancia();
+		desenhaCenario();
 		glPopMatrix();
 
 	}
@@ -552,6 +679,7 @@ void display(void) {
 	glTranslatef(pos[0], pos[1], pos[2]);
 	glRotatef(theta, 0, 1, 0);
 	desenhaAmbulancia();
+	desenhaCenario();
 	glPopMatrix();
 
 	glutSwapBuffers();
@@ -587,6 +715,12 @@ void Teclado(unsigned char key, int x, int y) {
 		pos[0] = pos[0] + vel * cos(theta * PI / 180.);
 		pos[2] = pos[2] - vel * sin(theta * PI / 180.);
 
+		foco1_pos[0] = foco1_pos[0] + vel * cos(theta * PI / 180.);
+		foco1_pos[2] = foco1_pos[2] - vel * sin(theta * PI / 180.);
+
+		foco2_pos[0] = foco2_pos[0] + vel * cos(theta * PI / 180.);
+		foco2_pos[2] = foco2_pos[2] - vel * sin(theta * PI / 180.);
+
 		obs3Person[0] = obs3Person[0] + vel * cos(theta * PI / 180.);
 		obs3Person[2] = obs3Person[2] - vel * sin(theta * PI / 180.);
 
@@ -598,6 +732,12 @@ void Teclado(unsigned char key, int x, int y) {
 	case 'S': case 's':
 		pos[0] = pos[0] - vel * cos(theta * PI / 180.);
 		pos[2] = pos[2] + vel * sin(theta * PI / 180.);
+
+		foco1_pos[0] = foco1_pos[0] - vel * cos(theta * PI / 180.);
+		foco1_pos[2] = foco1_pos[2] + vel * sin(theta * PI / 180.);
+
+		foco2_pos[0] = foco2_pos[0] - vel * cos(theta * PI / 180.);
+		foco2_pos[2] = foco2_pos[2] + vel * sin(theta * PI / 180.);
 
 		obs3Person[0] = obs3Person[0] - vel * cos(theta * PI / 180.);
 		obs3Person[2] = obs3Person[2] + vel * sin(theta * PI / 180.);
@@ -634,6 +774,12 @@ void Teclado(unsigned char key, int x, int y) {
 	case 'P': case 'p':
 		if (!thirdPerson) thirdPerson = 1;
 		else thirdPerson = 0;
+		glutPostRedisplay();
+		break;
+
+	case 'E': case 'e':
+		if (!sirene) sirene = 1;
+		else sirene = 0;
 		glutPostRedisplay();
 		break;
 
