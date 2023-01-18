@@ -331,13 +331,13 @@ void desenhaCenario() {
 
 		// Frente
 		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0);
-		glVertex3f(15, 15, 15);
-		glTexCoord2f(0, 0);
-		glVertex3f(15, 15, -15);
 		glTexCoord2f(1, 1);
-		glVertex3f(15, -15, -15);
+		glVertex3f(15, 15, 15);
 		glTexCoord2f(0, 1);
+		glVertex3f(15, 15, -15);
+		glTexCoord2f(0, 0);
+		glVertex3f(15, -15, -15);
+		glTexCoord2f(1, 0);
 		glVertex3f(15, -15, 15);
 		glEnd();
 	}
