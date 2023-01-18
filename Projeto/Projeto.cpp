@@ -44,6 +44,8 @@ GLuint texture;
 GLuint texture2;
 RgbImage imag;
 
+int malha = 1;
+
 // Luz Pontual ==========================================================================
 int luz = 1;
 GLfloat intensidadeLuz = 1.0;
@@ -54,6 +56,8 @@ GLfloat localCorEsp[4] = { 1.0, 1.0, 1.0, 1.0 };
 
 // Luz Focos
 int sirene = 0;
+GLfloat thetaFoco = 0.;
+GLfloat velFoco = 1;
 
 GLfloat foco1_pos[] = { 0.0, 5.5, 1 , 1.0 };
 GLfloat foco1_direcao[] = { 0.0, -1.0, 1.0, 0.0 };
@@ -190,6 +194,154 @@ void desenhaCenario() {
 	GLint dim = 8;
 	float med_dim = (float)dim / 2;
 
+	if (malha) {
+
+		// Lateral
+		glPushMatrix();
+		glTranslatef(-15, -15, -15);
+		glScalef(15, 15, 1);
+
+
+		glNormal3f(0, 0, 1);
+		glBegin(GL_QUADS);
+		for (i = 0; i < dim; i++)
+			for (j = 0; j < dim; j++) {
+				glTexCoord2f((float)j / dim, (float)i / dim);
+				glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+				glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+				glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+			}
+		glEnd();
+
+		glPopMatrix();
+
+		// Lateral
+		glPushMatrix();
+		glRotatef(180, 0, 1, 0);
+		glTranslatef(-15, -15, -15);
+		glScalef(15, 15, 1);
+
+
+		glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
+		glBegin(GL_QUADS);
+		for (i = 0; i < dim; i++)
+			for (j = 0; j < dim; j++) {
+				glTexCoord2f((float)j / dim, (float)i / dim);
+				glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+				glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+				glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+			}
+		glEnd();
+
+		glPopMatrix();
+
+		// Tras
+		glPushMatrix();
+		glRotatef(90, 0, 1, 0);
+		glTranslatef(-15, -15, -15);
+		glScalef(15, 15, 1);
+
+
+		glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
+		glBegin(GL_QUADS);
+		for (i = 0; i < dim; i++)
+			for (j = 0; j < dim; j++) {
+				glTexCoord2f((float)j / dim, (float)i / dim);
+				glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+				glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+				glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+			}
+		glEnd();
+
+		glPopMatrix();
+
+		// Frente
+		glPushMatrix();
+		glRotatef(-90, 0, 1, 0);
+		glTranslatef(-15, -15, -15);
+		glScalef(15, 15, 1);
+
+
+		glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
+		glBegin(GL_QUADS);
+		for (i = 0; i < dim; i++)
+			for (j = 0; j < dim; j++) {
+				glTexCoord2f((float)j / dim, (float)i / dim);
+				glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+				glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+				glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+				glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+				glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+			}
+		glEnd();
+
+		glPopMatrix();
+
+	}
+	else {
+		// Lateral 
+		glBegin(GL_QUADS);
+		glTexCoord2f(1, 1);
+		glVertex3f(15, 15, -15);
+		glTexCoord2f(1, 0);
+		glVertex3f(15, -15, -15);
+		glTexCoord2f(0, 0);
+		glVertex3f(-15, -15, -15);
+		glTexCoord2f(0, 1);
+		glVertex3f(-15, 15, -15);
+		glEnd();
+
+		// Lateral 
+		glBegin(GL_QUADS);
+		glTexCoord2f(1, 1);
+		glVertex3f(15, 15, 15);
+		glTexCoord2f(1, 0);
+		glVertex3f(15, -15, 15);
+		glTexCoord2f(0, 0);
+		glVertex3f(-15, -15, 15);
+		glTexCoord2f(0, 1);
+		glVertex3f(-15, 15, 15);
+		glEnd();
+
+		// Tras
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 1);
+		glVertex3f(-15, 15, 15);
+		glTexCoord2f(0, 0);
+		glVertex3f(-15, -15, 15);
+		glTexCoord2f(1, 0);
+		glVertex3f(-15, -15, -15);
+		glTexCoord2f(1, 1);
+		glVertex3f(-15, 15, -15);
+		glEnd();
+
+		// Frente
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 0);
+		glVertex3f(15, 15, 15);
+		glTexCoord2f(0, 0);
+		glVertex3f(15, 15, -15);
+		glTexCoord2f(1, 1);
+		glVertex3f(15, -15, -15);
+		glTexCoord2f(0, 1);
+		glVertex3f(15, -15, 15);
+		glEnd();
+	}
+
 	// Baixo
 	glBegin(GL_QUADS);
 	glVertex3f(-15, -15, 15);
@@ -206,129 +358,6 @@ void desenhaCenario() {
 	glVertex3f(15, 15, 15);
 	glEnd();*/
 
-	// Lateral 
-	/*glBegin(GL_QUADS);
-	glVertex3f(15, 15, -15);
-	glVertex3f(15, -15, -15);
-	glVertex3f(-15, -15, -15);
-	glVertex3f(-15, 15, -15);
-	glEnd();*/
-
-	glPushMatrix();
-	glTranslatef(-15, -15, -15);
-	glScalef(15, 15, 1);
-
-
-	glNormal3f(0,0,1);
-	glBegin(GL_QUADS);
-	for (i = 0; i < dim; i++)
-		for (j = 0; j < dim; j++) {
-			glTexCoord2f((float)j / dim, (float)i / dim);
-			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
-			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
-			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
-		}
-	glEnd();
-
-	glPopMatrix();
-
-	// Lateral 
-	/*glBegin(GL_QUADS);
-	glVertex3f(15, 15, 15);
-	glVertex3f(15, -15, 15);
-	glVertex3f(-15, -15, 15);
-	glVertex3f(-15, 15, 15);
-	glEnd();*/
-
-	glPushMatrix();
-	glRotatef(180, 0, 1, 0);
-	glTranslatef(-15, -15, -15);
-	glScalef(15, 15, 1);
-
-
-	glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
-	glBegin(GL_QUADS);
-	for (i = 0; i < dim; i++)
-		for (j = 0; j < dim; j++) {
-			glTexCoord2f((float)j / dim, (float)i / dim);
-			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
-			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
-			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
-		}
-	glEnd();
-
-	glPopMatrix();
-
-	// Tras
-	/*glBegin(GL_QUADS);
-	glVertex3f(-15, 15, 15);
-	glVertex3f(-15, -15, 15);
-	glVertex3f(-15, -15, -15);
-	glVertex3f(-15, 15, -15);
-	glEnd();*/
-
-	glPushMatrix();
-	glRotatef(90, 0, 1, 0);
-	glTranslatef(-15, -15, -15);
-	glScalef(15, 15, 1);
-
-
-	glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
-	glBegin(GL_QUADS);
-	for (i = 0; i < dim; i++)
-		for (j = 0; j < dim; j++) {
-			glTexCoord2f((float)j / dim, (float)i / dim);
-			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
-			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
-			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
-		}
-	glEnd();
-
-	glPopMatrix();
-
-
-	// Frente
-	/*glBegin(GL_QUADS);
-	glVertex3f(15, 15, 15);
-	glVertex3f(15, 15, -15);
-	glVertex3f(15, -15, -15);
-	glVertex3f(15, -15, 15);
-	glEnd();*/
-
-	glPushMatrix();
-	glRotatef(-90, 0, 1, 0);
-	glTranslatef(-15, -15, -15);
-	glScalef(15, 15, 1);
-
-
-	glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
-	glBegin(GL_QUADS);
-	for (i = 0; i < dim; i++)
-		for (j = 0; j < dim; j++) {
-			glTexCoord2f((float)j / dim, (float)i / dim);
-			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
-			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
-			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
-			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
-			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
-		}
-	glEnd();
-
-	glPopMatrix();
 
 	glDisable(GL_TEXTURE_2D);
 
@@ -641,9 +670,25 @@ void desenhaAmbulancia() {
 	glPopMatrix();
 
 	// Sirene
+	if (sirene) {
+		glEnable(GL_LIGHT1);
+		glEnable(GL_LIGHT2);
+		thetaFoco += 10.0;
+		foco1_direcao[0] = cos(thetaFoco * PI / 180.);
+		foco1_direcao[2] = sin(thetaFoco * PI / 180.);
+
+		foco2_direcao[0] = cos(thetaFoco * PI / 180. + PI);
+		foco2_direcao[2] = sin(thetaFoco * PI / 180. + PI);
+	}
+	else {
+		glDisable(GL_LIGHT1);
+		glDisable(GL_LIGHT2);
+	}
 	glPushMatrix();
+
 	glTranslatef(-1.0, 3.502, 0);
 	glScalef(0.5, 0.5, 0.5);
+	glRotated(-thetaFoco, 0, 1, 0);
 	desenhaCubo();
 
 	glPopMatrix();
@@ -732,16 +777,6 @@ void display(void) {
 	}
 	else {
 		glDisable(GL_LIGHT0);
-	}
-
-	// (Des)Ligar Sirene
-	if (sirene) {
-		glEnable(GL_LIGHT1);
-		glEnable(GL_LIGHT2);
-	}
-	else {
-		glDisable(GL_LIGHT1);
-		glDisable(GL_LIGHT2);
 	}
 
 	// Observador 
@@ -873,6 +908,12 @@ void Teclado(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 
+	case 'M': case 'm':
+		if (!malha) malha = 1;
+		else malha = 0;
+		glutPostRedisplay();
+		break;
+
 	}
 
 
@@ -889,7 +930,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(600, 500);
 	glutInitWindowPosition(200, 100);
-	glutCreateWindow("Setas Andar | 'L' Limpar o vidro | V - Baixa os vidros");
+	glutCreateWindow("Setas Andar | 'WASD' Mover Observador| 'L' Limpar o vidro | V - Baixa os vidros | 'V' Baixar os vidros | 'E' Sirene | 'M' Desativar Malha | 'P' Desativas Luz Pontual");
 
 	inicializa();
 
