@@ -136,6 +136,7 @@
     <ClInclude Include="RgbImage.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Brick-Wall.bmp" />
     <Image Include="Louis-Vuitton-Pattern.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -39,8 +39,9 @@ GLfloat angPB = 0.0f;
 int PB = 0;
 int ida; // para saber se o parabrisas esta na ida ou na volta
 
-// Textura ==============================================================================
+// Texturas ==============================================================================
 GLuint texture;
+GLuint texture2;
 RgbImage imag;
 
 // Luz Pontual ==========================================================================
@@ -86,10 +87,26 @@ void inicializa() {
 	glEnable(GL_LIGHT1);
 	glEnable(GL_LIGHT2);
 
-	// Textura =========================================================
+	// Texturas =========================================================
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	imag.LoadBmpFile("Louis-Vuitton-Pattern.bmp");
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+		imag.GetNumCols(),
+		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+		imag.ImageData());
+
+
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	imag.LoadBmpFile("Brick-Wall.bmp");
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -156,6 +173,9 @@ void drawEixos() {
 }
 
 void desenhaCenario() {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
 	GLfloat whitePlasticAmb[] = { 0.8 ,0.8 ,0.8 };
 	GLfloat whitePlasticDif[] = { 0.55 ,0.55 ,0.55 };
 	GLfloat whitePlasticSpec[] = { 0.870 ,0.870 ,0.870 };
@@ -165,6 +185,10 @@ void desenhaCenario() {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, whitePlasticDif);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, whitePlasticSpec);
 	glMaterialf(GL_FRONT, GL_SHININESS, whitePlasticCoef);
+
+	int i, j;
+	GLint dim = 8;
+	float med_dim = (float)dim / 2;
 
 	// Baixo
 	glBegin(GL_QUADS);
@@ -183,37 +207,130 @@ void desenhaCenario() {
 	glEnd();*/
 
 	// Lateral 
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	glVertex3f(15, 15, -15);
 	glVertex3f(15, -15, -15);
 	glVertex3f(-15, -15, -15);
 	glVertex3f(-15, 15, -15);
+	glEnd();*/
+
+	glPushMatrix();
+	glTranslatef(-15, -15, -15);
+	glScalef(15, 15, 1);
+
+
+	glNormal3f(0,0,1);
+	glBegin(GL_QUADS);
+	for (i = 0; i < dim; i++)
+		for (j = 0; j < dim; j++) {
+			glTexCoord2f((float)j / dim, (float)i / dim);
+			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+		}
 	glEnd();
+
+	glPopMatrix();
 
 	// Lateral 
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	glVertex3f(15, 15, 15);
 	glVertex3f(15, -15, 15);
 	glVertex3f(-15, -15, 15);
 	glVertex3f(-15, 15, 15);
+	glEnd();*/
+
+	glPushMatrix();
+	glRotatef(180, 0, 1, 0);
+	glTranslatef(-15, -15, -15);
+	glScalef(15, 15, 1);
+
+
+	glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
+	glBegin(GL_QUADS);
+	for (i = 0; i < dim; i++)
+		for (j = 0; j < dim; j++) {
+			glTexCoord2f((float)j / dim, (float)i / dim);
+			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+		}
 	glEnd();
 
+	glPopMatrix();
+
 	// Tras
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	glVertex3f(-15, 15, 15);
 	glVertex3f(-15, -15, 15);
 	glVertex3f(-15, -15, -15);
 	glVertex3f(-15, 15, -15);
+	glEnd();*/
+
+	glPushMatrix();
+	glRotatef(90, 0, 1, 0);
+	glTranslatef(-15, -15, -15);
+	glScalef(15, 15, 1);
+
+
+	glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
+	glBegin(GL_QUADS);
+	for (i = 0; i < dim; i++)
+		for (j = 0; j < dim; j++) {
+			glTexCoord2f((float)j / dim, (float)i / dim);
+			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+		}
 	glEnd();
 
+	glPopMatrix();
+
+
 	// Frente
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	glVertex3f(15, 15, 15);
 	glVertex3f(15, 15, -15);
 	glVertex3f(15, -15, -15);
 	glVertex3f(15, -15, 15);
+	glEnd();*/
+
+	glPushMatrix();
+	glRotatef(-90, 0, 1, 0);
+	glTranslatef(-15, -15, -15);
+	glScalef(15, 15, 1);
+
+
+	glNormal3f(0, 0, 1); // nao necessito de mudar a normal pq as transformacoes tambem se aplicam
+	glBegin(GL_QUADS);
+	for (i = 0; i < dim; i++)
+		for (j = 0; j < dim; j++) {
+			glTexCoord2f((float)j / dim, (float)i / dim);
+			glVertex3d((float)j / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)i / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)i / med_dim, 0);
+			glTexCoord2f((float)(j + 1) / dim, (float)(i + 1) / dim);
+			glVertex3d((float)(j + 1) / med_dim, (float)(i + 1) / med_dim, 0);
+			glTexCoord2f((float)j / dim, (float)(i + 1) / dim);
+			glVertex3d((float)j / med_dim, (float)(i + 1) / med_dim, 0);
+		}
 	glEnd();
 
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
 
 }
 

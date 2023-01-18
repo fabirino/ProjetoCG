@@ -37,5 +37,8 @@
     <Image Include="Louis-Vuitton-Pattern.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Brick-Wall.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
